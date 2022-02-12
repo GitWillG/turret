@@ -42,7 +42,7 @@ export default () => {
     const mixer = new THREE.AnimationMixer(o);
     mixers.push(mixer);
     const action = mixer.clipAction(animation);
-    action.setLoop(THREE.LoopOnce);
+    // action.setLoop(THREE.LoopOnce);
     actions.push(action);
     // const mixer = new THREE.AnimationMixer(o);
     // const actions = animations.find(a => a.name === 'Turett|turret_fire').map(animationClip => mixer.clipAction(animationClip));
