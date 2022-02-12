@@ -66,14 +66,6 @@ export default () => {
       o.updateMatrixWorld();
     };
 
-    // app.updateMatrixWorld();
-
-    /* let baseMesh = null;
-    o.traverse(o => {
-      if (!baseMesh && o.isMesh && /base_container/i.test(o.name)) {
-        baseMesh = o;
-      }
-    }); */
     const physicsId = physics.addGeometry(o);
     physicsIds.push(physicsId);
   })();
