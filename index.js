@@ -1,16 +1,23 @@
 import * as THREE from 'three';
 // import easing from './easing.js';
 import metaversefile from 'metaversefile';
-const {useApp, useFrame, useActivate, useLoaders, usePhysics, addTrackedApp, useDefaultModules, useCleanup} = metaversefile;
+const {useApp, useFrame, useActivate, useLocalPlayer, useLoaders, usePhysics, useParticleSystem, addTrackedApp, useDefaultModules, useCleanup} = metaversefile;
 
 const baseUrl = import.meta.url.replace(/(\/)[^\/\\]*$/, '$1');
+
+const localVector = new THREE.Vector3();
+const localVector2 = new THREE.Vector3();
+const localQuaternion = new THREE.Quaternion();
+const backwardVector = new THREE.Vector3(0, 0, 1);
 
 export default () => {
   const app = useApp();
   const physics = usePhysics();
+  const particleSystem = useParticleSystem();
 
   app.name = 'turret';
 
+  let activated = false;
   let activateCb = null;
   let frameCb = null;
   useActivate(() => {
@@ -50,15 +57,28 @@ export default () => {
     // console.log('got actions', animations, actions);
 
     activateCb = () => {
-      // console.log('activate', actions);
-      for (const action of actions) {
-        action.reset();
-        action.play();
-        // action.time = 0;
-        // action.time = startOffset;
+      activated = !activated;
+
+      if (activated) {
+        for (const action of actions) {
+          action.reset();
+          action.play();
+        }
+      } else {
+        action.stop();
       }
     };
     frameCb = deltaSeconds => {
+      if (activated) {
+        const localPlayer = useLocalPlayer();
+        localVector.copy(localPlayer.position)
+          .sub(localVector2.setFromMatrixPosition(o.matrixWorld));
+        localVector.y = 0;
+        localVector.normalize();
+        const targetQuaternion = localQuaternion.setFromUnitVectors(backwardVector, localVector);
+        o.quaternion.slerp(targetQuaternion, 2 * deltaSeconds);
+      }
+
       // console.log('mixer update', deltaSeconds);
       for (const mixer of mixers) {
         mixer.update(deltaSeconds);
