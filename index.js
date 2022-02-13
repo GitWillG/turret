@@ -1,7 +1,7 @@
 import * as THREE from 'three';
 // import easing from './easing.js';
 import metaversefile from 'metaversefile';
-const {useApp, useFrame, useActivate, useLocalPlayer, useLoaders, usePhysics, useParticleSystem, addTrackedApp, useDefaultModules, useCleanup} = metaversefile;
+const {useApp, useFrame, useActivate, useLocalPlayer, useCameraManager, useLoaders, usePhysics, useParticleSystem, addTrackedApp, useDefaultModules, useCleanup} = metaversefile;
 
 const baseUrl = import.meta.url.replace(/(\/)[^\/\\]*$/, '$1');
 
@@ -14,6 +14,7 @@ export default () => {
   const app = useApp();
   const physics = usePhysics();
   const particleSystem = useParticleSystem();
+  const cameraManager = useCameraManager();
 
   app.name = 'turret';
 
@@ -43,10 +44,19 @@ export default () => {
 
     // console.log('got animations', animations);
 
+    const _shake = () => {
+      localVector.setFromMatrixPosition(o.matrixWorld);
+      cameraManager.addShake(localVector, 0.2, 30, 500);
+    };
+
     const mixers = [];
     const animation = animations.find(a => a.name === 'Turett|turret_fire');
     const actions = [];
     const mixer = new THREE.AnimationMixer(o);
+    mixer.addEventListener('loop', e => {
+      // console.log('got mixer loop', e);
+      _shake();
+    });
     mixers.push(mixer);
     const action = mixer.clipAction(animation);
     // action.setLoop(THREE.LoopOnce);
@@ -64,6 +74,7 @@ export default () => {
           action.reset();
           action.play();
         }
+        _shake();
       } else {
         action.stop();
       }
