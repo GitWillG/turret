@@ -1,4 +1,5 @@
 {
   "name": "turret",
+  "description": "turret",
   "start_url": "index.js"
 }
