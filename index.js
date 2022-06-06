@@ -39,7 +39,9 @@ export default () => {
       const {gltfLoader} = useLoaders();
       gltfLoader.load(u, accept, function onprogress() {}, reject);
     });
+    console.log("glb data", o);
     const {animations} = o;
+    
     o = o.scene;
     app.add(o);
 
